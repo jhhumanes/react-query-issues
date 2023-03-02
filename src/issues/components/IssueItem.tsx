@@ -15,7 +15,7 @@ export const IssueItem: FC<Props> = ({ issue }) => {
     const queryClient = useQueryClient();
 
     const prefetchData = () => {
-        // Precarga de datos en la cache.
+        // Precarga de datos en la cache desde la red.
         queryClient.prefetchQuery(
             ["issue", issue.number],
             () => getIssueInfo(issue.number)
@@ -27,11 +27,22 @@ export const IssueItem: FC<Props> = ({ issue }) => {
         );
     }
 
+    const presetData = () => {
+        // Precarga de datos en la cache desde los datos que ya se tienen.
+        queryClient.setQueryData(
+            ["issue", issue.number],
+            issue,
+            {
+                updatedAt: new Date().getTime() + 100000, // fecha hasta que los datos se consideran frescos
+            }
+        );
+    }
+
     return (
         <div 
             className="card mb-2 issue" 
             onClick={ () => navigate(`/issues/issue/${issue.number}`) }
-            onMouseEnter={ prefetchData }
+            onMouseEnter={ presetData }
         >
             <div className="card-body d-flex align-items-center">
                 {
